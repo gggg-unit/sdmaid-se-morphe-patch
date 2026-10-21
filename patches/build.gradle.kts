@@ -1,3 +1,5 @@
+import org.gradle.language.jvm.tasks.ProcessResources
+
 group = "local.sdmaidse.morphe"
 
 kotlin {
@@ -8,12 +10,18 @@ kotlin {
 
 patches {
     about {
-        name = "SD Maid SE Morphe Patch"
-        description = "Local Unlock Pro patch for the official SD Maid SE FOSS APK"
+        name = "gggg-unit SD Maid SE FOSS Patches"
+        description = "Independent local-feature-state patch for SD Maid SE FOSS, compatible with Morphe"
         source = "https://github.com/gggg-unit/sdmaid-se-morphe-patch"
         author = "gggg-unit"
         contact = "https://github.com/gggg-unit/sdmaid-se-morphe-patch/issues"
         website = "https://github.com/gggg-unit/sdmaid-se-morphe-patch/releases"
         license = "GPLv3"
     }
+}
+
+tasks.named<ProcessResources>("processResources") {
+    from(rootProject.file("LICENSE")) { into("META-INF") }
+    from(rootProject.file("NOTICE")) { into("META-INF") }
+    from(rootProject.file("licenses")) { into("META-INF/licenses") }
 }

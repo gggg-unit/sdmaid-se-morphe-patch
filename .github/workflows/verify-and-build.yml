@@ -41,6 +41,19 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.MORPHE_PACKAGES_TOKEN || github.token }}
         run: ./gradlew :patches:buildAndroid --no-daemon
+      - name: Verify bundled license and notices
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          bundles = list(Path("patches/build/libs").glob("patches-*.mpp"))
+          assert len(bundles) == 1, "Expected one compiled bundle"
+          with ZipFile(bundles[0]) as bundle:
+              for source in [Path("LICENSE"), Path("NOTICE"), *Path("licenses").glob("*")]:
+                  entry = f"META-INF/{source.as_posix()}"
+                  assert bundle.read(entry) == source.read_bytes(), f"Notice mismatch: {entry}"
+          print("PASS: bundle preserves the published license and notices")
+          PY
       - name: Apply bundle to latest official FOSS APK
         env:
           GH_TOKEN: ${{ github.token }}
@@ -65,9 +78,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
-            gh release upload "${GITHUB_REF_NAME}" patches/build/libs/patches-*.mpp --clobber
+            gh release upload "${GITHUB_REF_NAME}" patches/build/libs/patches-*.mpp LICENSE NOTICE --clobber
           else
-            gh release create "${GITHUB_REF_NAME}" patches/build/libs/patches-*.mpp --generate-notes
+            gh release create "${GITHUB_REF_NAME}" patches/build/libs/patches-*.mpp LICENSE NOTICE --generate-notes
           fi
 
   publish-source:
