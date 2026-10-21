@@ -5,6 +5,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.instructionsOrNull
 import app.morphe.patcher.fieldAccess
 import app.morphe.patcher.patch.ApkFileType
+import app.morphe.patcher.patch.AppTarget
 import app.morphe.patcher.patch.Compatibility
 import app.morphe.patcher.patch.PatchException
 import app.morphe.patcher.patch.bytecodePatch
@@ -43,7 +44,7 @@ val unlockProFossPatch = bytecodePatch(
             packageName = "eu.darken.sdmse",
             apkFileType = ApkFileType.APK,
             appIconColor = 0x4CAF50,
-            targets = emptyList(),
+            targets = listOf(AppTarget(version = null)),
         ),
     )
 
