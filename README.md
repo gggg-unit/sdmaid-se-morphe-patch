@@ -15,17 +15,20 @@ APK-level testing before they can be confirmed as working.
 Use `python tools/verify_apk.py path/to/release.apk` to check the structural
 anchor of any newer official FOSS release before patching. This check does not
 replace an installation and feature test on Android.
-The GitHub Actions workflow checks the latest official release daily. It builds
-the `.mpp` on pushes and attaches it to tagged GitHub releases once the
-repository secret `MORPHE_PACKAGES_TOKEN` has `read:packages` access.
+The GitHub Actions workflow checks the newest official FOSS release daily. It
+builds the `.mpp` on pushes and attaches it to tagged GitHub releases. The build
+first uses the repository's Actions token to read Morphe's GitHub Packages;
+if GitHub denies that cross-repository package read, add a repository secret
+named `MORPHE_PACKAGES_TOKEN` with `read:packages` access.
 
 ## Build
 
 Use JDK 21 and Gradle with access to Morphe's GitHub Packages registry. Set
-`gpr.user` and `gpr.key` in your local Gradle properties (or set `GITHUB_ACTOR`
-and `GITHUB_TOKEN`), then run `./gradlew :patches:buildAndroid`. On Windows,
-`./build.ps1` also configures the portable JDK in this workspace and a short
-temporary path for Gradle.
+`GITHUB_ACTOR` and `GITHUB_TOKEN` (a token with `read:packages`), then run
+`./gradlew :patches:buildAndroid`. You can also set `gpr.user` and `gpr.key` in
+Gradle properties. On Windows, `./build.ps1` configures the portable JDK in
+this workspace and a short temporary path for Gradle. It uses a project-local
+Gradle user directory, so use environment variables with that script.
 Import the resulting `patches/build/libs/patches-*.mpp` bundle into Morphe and select **Unlock Pro (FOSS)**
 for an [official FOSS APK](https://github.com/d4rken-org/sdmaid-se/releases).
 
@@ -44,4 +47,3 @@ be fetched without GitHub Packages credentials.
 SD Maid SE and the reference patches are GPLv3 licensed. The approach was
 adapted from [Doom's patch](https://github.com/rushiranpise/morphe-patches)
 and [Paresh's patch](https://gitlab.com/Paresh-Maheshwari/paresh-patches).
-

@@ -1,0 +1,54 @@
+name: Verify SD Maid SE and build Morphe patch
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download latest official FOSS APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          asset_url=$(gh api 'repos/d4rken-org/sdmaid-se/releases?per_page=10' --jq '[.[] | .assets[] | select(.name | endswith("FOSS-RELEASE.apk")) | .browser_download_url][0]')
+          test -n "$asset_url"
+          curl --fail --location --retry 3 "$asset_url" --output sdmaid-se-latest.apk
+      - name: Check patch anchor
+        run: python3 tools/verify_apk.py sdmaid-se-latest.apk
+
+  build:
+    if: github.event_name != 'schedule'
+    needs: verify-upstream
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Build Morphe bundle
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.MORPHE_PACKAGES_TOKEN || github.token }}
+        run: ./gradlew :patches:buildAndroid --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdmaid-se-morphe-patch
+          path: patches/build/libs/patches-*.mpp
+          if-no-files-found: error
+      - name: Attach bundle to tagged release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" patches/build/libs/patches-*.mpp --generate-notes
