@@ -1,5 +1,11 @@
 group = "local.sdmaidse.morphe"
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
+}
+
 patches {
     about {
         name = "SD Maid SE Morphe Patch"
