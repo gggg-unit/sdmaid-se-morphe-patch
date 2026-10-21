@@ -69,3 +69,30 @@ jobs:
           else
             gh release create "${GITHUB_REF_NAME}" patches/build/libs/patches-*.mpp --generate-notes
           fi
+
+  publish-source:
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Refresh Morphe source metadata from the latest stable release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY}/releases/latest" > "${RUNNER_TEMP}/source-release.json"
+          python3 tools/sync_source.py "${RUNNER_TEMP}/source-release.json" --repository "${GITHUB_REPOSITORY}"
+          python3 tools/sync_source.py "${RUNNER_TEMP}/source-release.json" --repository "${GITHUB_REPOSITORY}" --check
+          git add patches-bundle.json
+          if git diff --cached --quiet; then
+            echo "Morphe source metadata is already up to date."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update Morphe source metadata [skip ci]'
+          git push origin HEAD:main

@@ -1,5 +1,12 @@
 # SD Maid SE FOSS Morphe patch
 
+**[➕ Add to Morphe · Morphe’ye ekle](https://morphe.software/add-source?github=gggg-unit/sdmaid-se-morphe-patch&name=SD%20Maid%20SE%20FOSS)**
+
+Open this link on Android with Morphe installed, then confirm adding the source.
+Morphe can then download this bundle and receive future stable patch updates.
+If the browser does not open Morphe, go to **Sources → + → Remote** and paste
+`https://github.com/gggg-unit/sdmaid-se-morphe-patch`.
+
 This Morphe patch unlocks the Pro feature gates in the official GitHub FOSS APK
 (`eu.darken.sdmse`). It is adapted from the earlier Doom and Paresh SD Maid SE
 patch strategies for the FOSS distribution. Their existing patches target
@@ -22,6 +29,11 @@ GitHub releases. The build
 first uses the repository's Actions token to read Morphe's GitHub Packages;
 if GitHub denies that cross-repository package read, add a repository secret
 named `MORPHE_PACKAGES_TOKEN` with `read:packages` access.
+
+The root `patches-bundle.json` supplies Morphe's remote-source metadata. After a
+tagged release is built, tested, and uploaded, the workflow updates this file on
+`main` from the latest stable GitHub release. A manual workflow run can also
+refresh the metadata. The add-source link stays the same across patch releases.
 
 ## Build
 

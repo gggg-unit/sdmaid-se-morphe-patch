@@ -1,0 +1,8 @@
+{
+  "created_at": "2026-10-21T04:58:18",
+  "description": "Version-independent Morphe patch for the official SD Maid SE FOSS APK (`eu.darken.sdmse`).\r\n\r\nThe bundle was built and applied to the official v2.2.2-rc0 APK using Morphe Desktop 1.18.1. The injected bytecode was verified. The structural anchor also passed on v2.1.0-rc0, v2.2.0-rc0, and v2.2.1-rc0. Future versions are accepted while this entitlement structure remains; GitHub Actions runs a daily patching check.\r\n\r\nDownload `patches-0.1.0.mpp` below and select **Unlock Pro (FOSS)** in Morphe. Release asset SHA-256: `49283160e200bb6bfad014b2dac735e83bfc07eac8d5a28baf3a669496a378f4`.\r\n\r\nAndroid device installation and feature behavior have not been tested.",
+  "download_url": "https://github.com/gggg-unit/sdmaid-se-morphe-patch/releases/download/v0.1.0/patches-0.1.0.mpp",
+  "signature_download_url": "",
+  "page_url": "https://github.com/gggg-unit/sdmaid-se-morphe-patch/releases/tag/v0.1.0",
+  "version": "0.1.0"
+}
