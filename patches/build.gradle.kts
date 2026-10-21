@@ -21,7 +21,7 @@ patches {
 }
 
 tasks.named<ProcessResources>("processResources") {
-    from(rootProject.file("LICENSE")) { into("META-INF") }
-    from(rootProject.file("NOTICE")) { into("META-INF") }
-    from(rootProject.file("licenses")) { into("META-INF/licenses") }
+    from(rootProject.file("LICENSE"))
+    from(rootProject.file("NOTICE"))
+    from(rootProject.file("licenses")) { into("licenses") }
 }

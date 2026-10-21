@@ -73,7 +73,8 @@ use the [repository copy of `patches-0.1.1.mpp`](dist/patches-0.1.1.mpp), or bui
 `patches/build/libs/patches-*.mpp` locally. Import it into Morphe and select **Unlock Pro (FOSS)**
 for an [official FOSS APK](https://github.com/d4rken-org/sdmaid-se/releases).
 The release page shows the SHA-256 of each downloadable asset. From `0.1.1`
-onward, bundles also contain the license and notices under `META-INF/`.
+onward, bundles also contain `LICENSE`, `NOTICE`, and the `licenses/` directory
+at the archive root.
 
 This project does not target the Google Play APK/AAB variant. Install the
 patched APK under Morphe's signing key, not over an APK signed by the developer.

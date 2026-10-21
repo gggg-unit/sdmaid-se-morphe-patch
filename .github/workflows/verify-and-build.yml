@@ -50,7 +50,7 @@ jobs:
           assert len(bundles) == 1, "Expected one compiled bundle"
           with ZipFile(bundles[0]) as bundle:
               for source in [Path("LICENSE"), Path("NOTICE"), *Path("licenses").glob("*")]:
-                  entry = f"META-INF/{source.as_posix()}"
+                  entry = source.as_posix()
                   assert bundle.read(entry) == source.read_bytes(), f"Notice mismatch: {entry}"
           print("PASS: bundle preserves the published license and notices")
           PY
