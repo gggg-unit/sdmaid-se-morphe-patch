@@ -31,11 +31,13 @@ Use JDK 21 and Gradle with access to Morphe's GitHub Packages registry. Set
 Gradle properties. On Windows, `./build.ps1` configures the portable JDK in
 this workspace and a short temporary path for Gradle. It uses a project-local
 Gradle user directory, so use environment variables with that script.
-Download [the compiled `patches-0.1.0.mpp`](dist/patches-0.1.0.mpp), or build
-`patches/build/libs/patches-*.mpp` locally. Import the bundle into Morphe and select **Unlock Pro (FOSS)**
+Download the bundle from the [latest GitHub release](https://github.com/gggg-unit/sdmaid-se-morphe-patch/releases/latest),
+use the [repository copy of `patches-0.1.0.mpp`](dist/patches-0.1.0.mpp), or build
+`patches/build/libs/patches-*.mpp` locally. Import it into Morphe and select **Unlock Pro (FOSS)**
 for an [official FOSS APK](https://github.com/d4rken-org/sdmaid-se/releases).
-The published `.mpp` has SHA-256
+The repository copy has SHA-256
 `1cc4077696ad5f9a0ae6775196da0da14e66cfb06116f2c447c1662175a30c62`.
+The release asset is rebuilt and its SHA-256 is shown on the release page.
 
 This project does not target the Google Play APK/AAB variant. Install the
 patched APK under Morphe's signing key, not over an APK signed by the developer.
