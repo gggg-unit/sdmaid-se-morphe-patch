@@ -21,7 +21,7 @@ def uleb(data, offset):
         shift += 7
 
 
-def verify_dex(data):
+def verify_dex(data, patched=False):
     u32 = lambda offset: struct.unpack_from("<I", data, offset)[0]
     strings_size, strings_off = struct.unpack_from("<II", data, 0x38)
     types_size, types_off = struct.unpack_from("<II", data, 0x40)
@@ -84,20 +84,27 @@ def verify_dex(data):
                     if word & 0xFF != 0x5C or units[cursor + 1] != target_field:
                         continue
                     source_register = word >> 8 & 0xF
-                    if source_register < registers:
+                    has_true_write = (
+                        cursor > 0
+                        and units[cursor - 1] & 0xFF == 0x12
+                        and (units[cursor - 1] >> 8) & 0xF == source_register
+                        and (units[cursor - 1] >> 12) & 0xF == 1
+                    )
+                    if source_register < registers and (not patched or has_true_write):
                         matches += 1
     return matches
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--patched", action="store_true", help="Require the injected const/4 true before isPro write")
     parser.add_argument("apks", nargs="+", help="Official SD Maid SE FOSS APKs")
     args = parser.parse_args()
     failed = False
     for path in args.apks:
         with zipfile.ZipFile(path) as apk:
             count = sum(
-                verify_dex(apk.read(name))
+                verify_dex(apk.read(name), args.patched)
                 for name in apk.namelist() if name.endswith(".dex")
             )
         result = "PASS" if count == 1 else f"FAIL ({count} matching writes)"

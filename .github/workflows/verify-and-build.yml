@@ -25,7 +25,6 @@ jobs:
         run: python3 tools/verify_apk.py sdmaid-se-latest.apk
 
   build:
-    if: github.event_name != 'schedule'
     needs: verify-upstream
     runs-on: ubuntu-latest
     permissions:
@@ -42,7 +41,20 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.MORPHE_PACKAGES_TOKEN || github.token }}
         run: ./gradlew :patches:buildAndroid --no-daemon
+      - name: Apply bundle to latest official FOSS APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          apk_url=$(gh api 'repos/d4rken-org/sdmaid-se/releases?per_page=10' --jq '[.[] | .assets[] | select(.name | endswith("FOSS-RELEASE.apk")) | .browser_download_url][0]')
+          test -n "$apk_url"
+          curl --fail --location --retry 3 "$apk_url" --output sdmaid-se-latest.apk
+          curl --fail --location --retry 3 'https://github.com/MorpheApp/morphe-desktop/releases/download/v1.18.1/morphe-desktop-1.18.1-all.jar' --output morphe-desktop.jar
+          bundle=$(find patches/build/libs -maxdepth 1 -name 'patches-*.mpp' -print -quit)
+          test -n "$bundle"
+          java -Xmx4g -jar morphe-desktop.jar patch "-p=$bundle" --out=patched.apk --result-file=patch-result.json --unsigned sdmaid-se-latest.apk
+          python3 tools/verify_apk.py --patched patched.apk
       - uses: actions/upload-artifact@v4
+        if: github.event_name != 'schedule'
         with:
           name: sdmaid-se-morphe-patch
           path: patches/build/libs/patches-*.mpp
