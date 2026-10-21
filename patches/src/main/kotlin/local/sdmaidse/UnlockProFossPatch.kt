@@ -49,7 +49,12 @@ val unlockProFossPatch = bytecodePatch(
     )
 
     execute {
-        val method = fossInfoConstructor.method
+        val method = fossInfoConstructor.methodOrNull
+            ?: throw PatchException(
+                "SD Maid SE FOSS entitlement constructor was not found. " +
+                    "Use the original GitHub FOSS APK; Google Play APKs are unsupported. " +
+                    "If this is a FOSS APK, report the full patch log, APK version/source, and Morphe version.",
+            )
         val match = fossInfoConstructor.instructionMatches.singleOrNull()
             ?: throw PatchException("Expected one Info.isPro write in the FOSS constructor.")
         val write = method.instructionsOrNull?.getOrNull(match.index) as? TwoRegisterInstruction

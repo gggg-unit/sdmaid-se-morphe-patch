@@ -100,12 +100,16 @@ jobs:
           gh api "repos/${GITHUB_REPOSITORY}/releases/latest" > "${RUNNER_TEMP}/source-release.json"
           python3 tools/sync_source.py "${RUNNER_TEMP}/source-release.json" --repository "${GITHUB_REPOSITORY}"
           python3 tools/sync_source.py "${RUNNER_TEMP}/source-release.json" --repository "${GITHUB_REPOSITORY}" --check
-          git add patches-bundle.json
+          release_tag=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["tag_name"])' "${RUNNER_TEMP}/source-release.json")
+          mkdir -p "${RUNNER_TEMP}/source-bundle" dist
+          gh release download "${release_tag}" --repo "${GITHUB_REPOSITORY}" --pattern '*.mpp' --dir "${RUNNER_TEMP}/source-bundle" --clobber
+          cp "${RUNNER_TEMP}/source-bundle/"*.mpp dist/
+          git add patches-bundle.json dist/patches-*.mpp
           if git diff --cached --quiet; then
             echo "Morphe source metadata is already up to date."
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Update Morphe source metadata [skip ci]'
+          git commit -m 'Update Morphe source metadata and released bundle [skip ci]'
           git push origin HEAD:main
